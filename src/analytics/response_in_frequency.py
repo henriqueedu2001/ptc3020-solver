@@ -7,7 +7,7 @@ def response_in_frequency_sample(
     lower_limit:float = 0.1,
     upper_limit:float = 10000,
     n_points:float = 200
-) -> List[np.typing.ArrayLike]:
+) -> Tuple[np.typing.ArrayLike, np.typing.ArrayLike]:
     """Samples a set of frequencies in the specified range and computes the response
     in frequency for the transfer function G(s). The sampled array of frequencies 
     [w1, w2, w3, ..., wn] is in log scale, for the Bode's Diagram. The output is the
@@ -20,7 +20,8 @@ def response_in_frequency_sample(
         n_points (float, optional): the number of points of the sample. Defaults to 200.
 
     Returns:
-        List[np.typing.ArrayLike]: the sampled frequencies
+        Tuple[np.typing.ArrayLike, np.typing.ArrayLike]: the sampled frequencies [w1, w2, w3, ..., wn]
+        and the corresponding response in frequency [G(jw1), G(jw2), G(jw3), ..., G(jwn)].
     
     Examples:
         >>> G = TransferFunction(
@@ -30,12 +31,16 @@ def response_in_frequency_sample(
         ...     print_style='fraction'
         ... )
 
-        >>> response_in_frequency_sample(
+        >>> freqs, rf = response_in_frequency_sample(
         ...     transfer_function=G,
         ...     lower_limit=0.01,
         ...     upper_limit=100,
         ...     n_points=4
         ... )
+        >>> freqs
+        array([1.00000000e-02, 2.15443469e-01, 4.64158883e+00, 1.00000000e+02]
+        
+        >>> rf
         [np.complex128(5.000124996875079+0.024999375015624613j), np.complex128(5.057354322463396+0.53243036541105j), np.complex128(9.217047901907785+1.817070857879262j), np.complex128(9.998000799680128+0.09996001599360255j)]
     """
     frequencies = sample_frequencies(
@@ -44,7 +49,7 @@ def response_in_frequency_sample(
         n_points=n_points
     )
     complex_points = response_in_frequency(transfer_function=transfer_function, frequencies=frequencies)
-    return complex_points
+    return frequencies, complex_points
 
 
 def response_in_frequency(
